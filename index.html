@@ -3,135 +3,115 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تم التفعيل - Smart Expiry</title>
+    <title>تأكيد الحساب - متجري</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Cairo', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-        
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #4CAF50, #45a049);
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
             padding: 20px;
         }
-        
         .container {
-            max-width: 500px;
-            width: 100%;
             background: white;
             border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            overflow: hidden;
         }
-        
-        .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 40px 20px;
-            text-align: center;
+        .icon {
+            font-size: 80px;
+            margin-bottom: 20px;
         }
-        
-        .header h1 {
-            font-size: 28px;
-            margin-bottom: 10px;
-        }
-        
-        .content {
-            padding: 40px 30px;
-            text-align: center;
-        }
-        
-        .success-icon {
-            width: 80px;
-            height: 80px;
-            background: #4CAF50;
-            color: white;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 40px;
-            margin: 0 auto 20px;
-        }
-        
-        .content h2 {
+        h1 {
             color: #333;
             margin-bottom: 15px;
+            font-size: 28px;
         }
-        
-        .content p {
+        p {
             color: #666;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
+            font-size: 18px;
             line-height: 1.6;
         }
-        
-        .btn {
+        .button {
             display: inline-block;
-            padding: 14px 30px;
-            background: #667eea;
+            background: #4CAF50;
             color: white;
+            padding: 15px 40px;
+            border-radius: 50px;
             text-decoration: none;
-            border-radius: 10px;
-            font-weight: 600;
-            margin: 5px;
+            font-size: 18px;
+            font-weight: bold;
+            transition: all 0.3s;
         }
-        
-        .btn:hover {
-            background: #5a67d8;
+        .button:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(76, 175, 80, 0.4);
         }
-        
-        .btn-secondary {
-            background: #f0f0f0;
-            color: #333;
+        .success {
+            color: #4CAF50;
         }
-        
-        .btn-secondary:hover {
-            background: #e0e0e0;
+        .error {
+            color: #f44336;
         }
-        
-        .footer {
-            background: #f9f9f9;
-            padding: 20px;
-            text-align: center;
-            font-size: 14px;
-            color: #999;
-            border-top: 1px solid #eee;
+        .loader {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #4CAF50;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
     </style>
-    <!-- خط Cairo للعربية -->
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <div class="container">
-        <div class="header">
-            <h1>📦 Smart Expiry</h1>
-            <p>تم تفعيل حسابك بنجاح!</p>
-        </div>
-        
-        <div class="content">
-            <div class="success-icon">✓</div>
-            <h2>مرحباً بك! 🎉</h2>
-            <p>تم تفعيل بريدك الإلكتروني بنجاح.<br>يمكنك الآن العودة إلى التطبيق وتسجيل الدخول.</p>
-            
-            <a href="myapp://login" class="btn">📱 فتح التطبيق</a>
-        </div>
-        
-        <div class="footer">
-            © 2026 Smart Expiry - جميع الحقوق محفوظة
-        </div>
+        <div class="icon">✅</div>
+        <h1>تم تأكيد الحساب بنجاح!</h1>
+        <p>تم تفعيل حسابك في متجرنا. يمكنك الآن العودة إلى التطبيق وتسجيل الدخول.</p>
+        <a href="com.yourcompany.ecommerce_app://login-callback" class="button">فتح التطبيق</a>
+        <p style="margin-top: 20px; font-size: 14px; color: #999;">
+            إذا لم يفتح التطبيق تلقائياً، تأكد من تثبيت التطبيق على هاتفك
+        </p>
+        <div id="status"></div>
     </div>
-    
+
     <script>
-        // محاولة فتح التطبيق تلقائياً بعد 3 ثوان
-        setTimeout(() => {
-            window.location.href = 'myapp://login?confirmed=true';
-        }, 3000);
+        // محاولة فتح التطبيق تلقائياً
+        window.onload = function() {
+            // استخراج الـ token من الرابط
+            const urlParams = new URLSearchParams(window.location.hash.substring(1));
+            const accessToken = urlParams.get('access_token');
+            const refreshToken = urlParams.get('refresh_token');
+            const type = urlParams.get('type');
+            
+            if (type === 'signup' || type === 'recovery') {
+                document.getElementById('status').innerHTML = 
+                    '<p class="success">جاري تحويلك إلى التطبيق...</p><div class="loader"></div>';
+                
+                // محاولة فتح التطبيق
+                setTimeout(function() {
+                    window.location.href = 'com.yourcompany.ecommerce_app://login-callback#' + 
+                        window.location.hash.substring(1);
+                }, 1000);
+            }
+        };
     </script>
 </body>
 </html>
